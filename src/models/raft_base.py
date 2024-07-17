@@ -116,14 +116,14 @@ class MotionEncoder(nn.Module):
     def __init__(self, in_channels_corr, corr_layers=(256, 192), flow_layers=(128, 64), out_channels=128):
         super(MotionEncoder,self).__init__()
 
-        self.convcorr1 = general_conv2d(in_channels=in_channels_corr, out_channels=corr_layers[0], ksize=1, do_batch_norm=False)
+        self.convcorr1 = general_conv2d(in_channels=in_channels_corr, out_channels=corr_layers, ksize=1, strides=1, do_batch_norm=False)
         # self.convcorr2 = general_conv2d(in_channels=corr_layers[0], out_channels=corr_layers[1], do_batch_norm=False)
 
-        self.convflow1 = general_conv2d(in_channels=2, out_channels=flow_layers[0], do_batch_norm=False, ksize=7)
-        self.convflow2 = general_conv2d(in_channels=flow_layers[0], out_channels=flow_layers[1], do_batch_norm=False)
+        self.convflow1 = general_conv2d(in_channels=2, out_channels=flow_layers[0], do_batch_norm=False, ksize=7, strides=1)
+        self.convflow2 = general_conv2d(in_channels=flow_layers[0], out_channels=flow_layers[1], strides=1, do_batch_norm=False)
 
         #corrとflowを結合したものを入力にして出力する outchannelを-2しているのは、後からflowを結合するから
-        self.conv = general_conv2d(in_channels=corr_layers[-1]+flow_layers[-1], out_channels=out_channels-2, do_batch_norm=False)
+        self.conv = general_conv2d(in_channels=corr_layers+flow_layers[-1], out_channels=out_channels-2, strides=1, do_batch_norm=False)
         
         self.out_channels = out_channels
 
@@ -237,7 +237,7 @@ class FeatureEncoder(nn.Module):
             # build_resnet_block(in_channels=res_layers[2], out_channels=res_layers[3], do_batch_norm=do_batch_norm),
             # build_resnet_block(in_channels=res_layers[3], out_channels=res_layers[3], do_batch_norm=do_batch_norm)
         )
-        self.conv2 = general_conv2d(in_channels=res_layers[3], out_channels=out_channels, ksize=1)
+        self.conv2 = general_conv2d(in_channels=res_layers[3], out_channels=out_channels, ksize=1, strides=1,)
 
     def forward(self, input):
         input = self.conv1(input)

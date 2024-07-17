@@ -16,7 +16,7 @@ class build_resnet_block(nn.Module):
         )
 
         if self.in_channels != self.out_channels:
-            self.conv = nn.Conv2d(in_channels = self.in_channels,out_channels = self.out_channels, kernel_size = 1)
+            self.conv = nn.Conv2d(in_channels = self.in_channels, out_channels = self.out_channels, kernel_size = 1)
         else:
             self.conv = nn.Identity()
 
@@ -37,13 +37,13 @@ class build_bottleneck_block(nn.Module):
         self._layers = layers
 
         self.bn_block = nn.Sequential(
-            general_conv2d(in_channels = self.in_channels, out_channels=self.out_channels // 4, ksize=1, do_batch_norm=do_batch_norm),
-            general_conv2d(in_channels = self.out_channels // 4 , out_channels=self.out_channels //4, strides=1, do_batch_norm=do_batch_norm),
-            general_conv2d(in_channels = self.out_channels // 4, out_channels=self.out_channels, ksize=1, do_batch_norm=do_batch_norm),
+            general_conv2d(in_channels = self.in_channels, out_channels=self.out_channels // 4, ksize=1, strides=1, do_batch_norm=do_batch_norm),
+            general_conv2d(in_channels = self.out_channels // 4 , out_channels=self.out_channels // 4, strides=1, do_batch_norm=do_batch_norm),
+            general_conv2d(in_channels = self.out_channels // 4, out_channels=self.out_channels, ksize=1, strides=1, do_batch_norm=do_batch_norm),
         )
 
         if self.in_channels != self.out_channels:
-            self.conv = nn.Conv2d(in_channels = self.in_channels,out_channels = self.out_channels, kernel_size = 1)
+            self.conv = nn.Conv2d(in_channels = self.in_channels, out_channels = self.out_channels, kernel_size = 1)
         else:
             self.conv = nn.Identity()
 
