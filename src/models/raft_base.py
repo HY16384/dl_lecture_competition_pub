@@ -77,7 +77,7 @@ class RecurrentBlock(nn.Module):
     普通の入力としては、motion encoderの出力とcontexを結合したものを受け取る
     """
 
-    def __init__(self, input_size, hidden_size,):
+    def __init__(self, input_size, hidden_size):
         super().__init__()
         self.convgru1 = ConvGRU(input_size=input_size, hidden_size=hidden_size, kernel_size=1)
         self.convgru2 = ConvGRU(input_size=input_size, hidden_size=hidden_size, kernel_size=5, padding=2)

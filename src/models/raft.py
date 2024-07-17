@@ -12,9 +12,8 @@ from typing import Dict, Any
 _BASE_CHANNELS = 64
 
 class RAFT(nn.Module):
-    def __init__(self, args, feature_encoder, context_encoder, corr_block, update_block, mask_predictor=None):
+    def __init__(self, feature_encoder, context_encoder, corr_block, update_block, mask_predictor=None):
         super(RAFT,self).__init__()
-        self._args = args
 
         self.feature_encoder = feature_encoder
         self.context_encoder = context_encoder
@@ -64,12 +63,8 @@ class RAFT(nn.Module):
 def _raft(
     # Feature encoder
     feature_encoder_layers,
-    feature_encoder_block,
-    feature_encoder_norm_layer,
     # Context encoder
     context_encoder_layers,
-    context_encoder_block,
-    context_encoder_norm_layer,
     # Correlation block
     corr_block_num_levels,
     corr_block_radius,
@@ -79,18 +74,12 @@ def _raft(
     motion_encoder_out_channels,
     # Recurrent block
     recurrent_block_hidden_state_size,
-    recurrent_block_kernel_size,
-    recurrent_block_padding,
     # Flow Head
     flow_head_hidden_size,
     **kwargs,
 ):
-    feature_encoder = kwargs.pop("feature_encoder", None) or FeatureEncoder(
-        block=feature_encoder_block, layers=feature_encoder_layers, norm_layer=feature_encoder_norm_layer
-    )
-    context_encoder = kwargs.pop("context_encoder", None) or FeatureEncoder(
-        block=context_encoder_block, layers=context_encoder_layers, norm_layer=context_encoder_norm_layer
-    )
+    feature_encoder = kwargs.pop("feature_encoder", None) or FeatureEncoder(4, res_layers=feature_encoder_layers)
+    context_encoder = kwargs.pop("context_encoder", None) or FeatureEncoder(4, res_layers=context_encoder_layers)
 
     corr_block = kwargs.pop("corr_block", None) or CorrBlock(num_levels=corr_block_num_levels, radius=corr_block_radius)
 
@@ -107,12 +96,17 @@ def _raft(
     recurrent_block = RecurrentBlock(
         input_size=motion_encoder.out_channels + out_channels_context,
         hidden_size=recurrent_block_hidden_state_size,
-        kernel_size=recurrent_block_kernel_size,
-        padding=recurrent_block_padding,
     )
 
-    flow_head = FlowHead(in_channels=recurrent_block_hidden_state_size, hidden_size=flow_head_hidden_size)
-    update_block = UpdateBlock(motion_encoder=motion_encoder, recurrent_block=recurrent_block, flow_head=flow_head)
+    flow_head = FlowHead(
+        in_channels=recurrent_block_hidden_state_size,
+        hidden_size=flow_head_hidden_size
+    )
+    update_block = UpdateBlock(
+        motion_encoder=motion_encoder,
+        recurrent_block=recurrent_block,
+        flow_head=flow_head
+    )
 
     mask_predictor = kwargs.pop("mask_predictor", None)
     if mask_predictor is None:
@@ -136,10 +130,8 @@ def raft_large(**kwargs):
     return _raft(
         # Feature encoder
         feature_encoder_layers=(64, 64, 96, 128, 256),
-        feature_encoder_block=build_resnet_block,
         # Context encoder
         context_encoder_layers=(64, 64, 96, 128, 256),
-        context_encoder_block=build_resnet_block,
         # Correlation block
         corr_block_num_levels=4,
         corr_block_radius=4,
@@ -149,8 +141,6 @@ def raft_large(**kwargs):
         motion_encoder_out_channels=128,
         # Recurrent block
         recurrent_block_hidden_state_size=128,
-        recurrent_block_kernel_size=(1,5),
-        recurrent_block_padding=(0,2),
         # Flow head
         flow_head_hidden_size=256,
         **kwargs,
