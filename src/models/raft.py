@@ -52,8 +52,8 @@ class RAFT(nn.Module):
 
             coords1 = coords1 + delta_flow
 
-            up_mask = self.mask_predictor(hidden_state)
-            upsampled_flow = upsample_flow(flow=(coords1 - coords0), up_mask=up_mask) #元のサイズに変換
+            # up_mask = self.mask_predictor(hidden_state)
+            upsampled_flow = upsample_flow(flow=(coords1 - coords0), up_mask=None) #元のサイズに変換
 
             flow_predictions.append(upsampled_flow)
 
@@ -108,20 +108,20 @@ def _raft(
         flow_head=flow_head
     )
 
-    mask_predictor = kwargs.pop("mask_predictor", None)
-    if mask_predictor is None:
-        mask_predictor = MaskPredictor(
-            in_channels=recurrent_block_hidden_state_size,
-            hidden_size=256,
-            multiplier=0.25,  # See comment in MaskPredictor about this
-        )
+    # mask_predictor = kwargs.pop("mask_predictor", None)
+    # if mask_predictor is None:
+    #     mask_predictor = MaskPredictor(
+    #         in_channels=recurrent_block_hidden_state_size,
+    #         hidden_size=256,
+    #         multiplier=0.25,  # See comment in MaskPredictor about this
+    #     )
 
     model = RAFT(
         feature_encoder=feature_encoder,
         context_encoder=context_encoder,
         corr_block=corr_block,
         update_block=update_block,
-        mask_predictor=mask_predictor
+        # mask_predictor=mask_predictor
     )
 
     return model

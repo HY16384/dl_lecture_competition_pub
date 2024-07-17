@@ -9,29 +9,29 @@ from src.utils import *
 参考: https://pytorch.org/vision/0.12/_modules/torchvision/models/optical_flow/raft.html
 '''
 
-class MaskPredictor(nn.Module):
-    """
-    upsamplingをする層
-    """
+# class MaskPredictor(nn.Module):
+#     """
+#     upsamplingをする層
+#     """
 
-    def __init__(self, *, in_channels, hidden_size, multiplier=0.25):
-        super().__init__()
-        self.convrelu = general_conv2d(in_channels, hidden_size, strides=1, padding=0, do_batch_norm=False)
-        # 8 * 8 * 9 because the predicted flow is downsampled by 8, from the downsampling of the initial FeatureEncoder
-        # and we interpolate with all 9 surrounding neighbors. See paper and appendix B.
-        self.conv = nn.Conv2d(hidden_size, 8 * 8 * 9, 1)
+#     def __init__(self, *, in_channels, hidden_size, multiplier=0.25):
+#         super().__init__()
+#         self.convrelu = general_conv2d(in_channels, hidden_size, strides=1, padding=0, do_batch_norm=False)
+#         # 8 * 8 * 9 because the predicted flow is downsampled by 8, from the downsampling of the initial FeatureEncoder
+#         # and we interpolate with all 9 surrounding neighbors. See paper and appendix B.
+#         self.conv = nn.Conv2d(hidden_size, 8 * 8 * 9, 1)
 
-        # In the original code, they use a factor of 0.25 to "downweight the gradients" of that branch.
-        # See e.g. https://github.com/princeton-vl/RAFT/issues/119#issuecomment-953950419
-        # or https://github.com/princeton-vl/RAFT/issues/24.
-        # It doesn't seem to affect epe significantly and can likely be set to 1.
-        # らしい
-        self.multiplier = multiplier
+#         # In the original code, they use a factor of 0.25 to "downweight the gradients" of that branch.
+#         # See e.g. https://github.com/princeton-vl/RAFT/issues/119#issuecomment-953950419
+#         # or https://github.com/princeton-vl/RAFT/issues/24.
+#         # It doesn't seem to affect epe significantly and can likely be set to 1.
+#         # らしい
+#         self.multiplier = multiplier
 
-    def forward(self, x):
-        x = self.convrelu(x)
-        x = self.conv(x)
-        return self.multiplier * x
+#     def forward(self, x):
+#         x = self.convrelu(x)
+#         x = self.conv(x)
+#         return self.multiplier * x
 
 class UpdateBlock(nn.Module):
     """
