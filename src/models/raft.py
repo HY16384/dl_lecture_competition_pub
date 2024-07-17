@@ -126,22 +126,22 @@ def _raft(
 
     return model
 
-def raft_large(**kwargs):
+def get_raft_model(**kwargs):
     return _raft(
         # Feature encoder
-        feature_encoder_layers=(64, 64, 96, 128, 256),
+        feature_encoder_layers=(32, 64, 96, 128),
         # Context encoder
-        context_encoder_layers=(64, 64, 96, 128, 256),
+        context_encoder_layers=(32, 64, 96, 128),
         # Correlation block
         corr_block_num_levels=4,
         corr_block_radius=4,
         # Motion encoder
-        motion_encoder_corr_layers=(256, 192),
-        motion_encoder_flow_layers=(128, 64),
-        motion_encoder_out_channels=128,
+        motion_encoder_corr_layers=(96),
+        motion_encoder_flow_layers=(64, 32),
+        motion_encoder_out_channels=82,
         # Recurrent block
-        recurrent_block_hidden_state_size=128,
+        recurrent_block_hidden_state_size=96,
         # Flow head
-        flow_head_hidden_size=256,
+        flow_head_hidden_size=128,
         **kwargs,
     )

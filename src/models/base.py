@@ -5,7 +5,7 @@ class build_resnet_block(nn.Module):
     """
     a resnet block which includes two general_conv2d
     """
-    def __init__(self, in_channels, out_channels, do_batch_norm=False):
+    def __init__(self, in_channels, out_channels, do_batch_norm=True):
         super(build_resnet_block,self).__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
@@ -15,9 +15,15 @@ class build_resnet_block(nn.Module):
             general_conv2d(in_channels=self.out_channels, out_channels=self.out_channels, strides=1, do_batch_norm=do_batch_norm),
         )
 
+        if self.in_channels != self.out_channels:
+            self.conv = nn.Conv2d(in_channels = self.in_channels,out_channels = self.out_channels, kernel_size = 1)
+        else:
+            self.conv = nn.Identity()
+
     def forward(self, input_res):
         inputs = input_res.clone()
         input_res = self.res_block(input_res)
+        inputs = self.conv(inputs)
         return input_res + inputs
     
 class build_bottleneck_block(nn.Module):

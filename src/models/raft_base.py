@@ -79,13 +79,13 @@ class RecurrentBlock(nn.Module):
 
     def __init__(self, input_size, hidden_size):
         super().__init__()
-        self.convgru1 = ConvGRU(input_size=input_size, hidden_size=hidden_size, kernel_size=1)
-        self.convgru2 = ConvGRU(input_size=input_size, hidden_size=hidden_size, kernel_size=5, padding=2)
+        self.convgru1 = ConvGRU(input_size=input_size, hidden_size=hidden_size, kernel_size=3, padding=1)
+        # self.convgru2 = ConvGRU(input_size=input_size, hidden_size=hidden_size, kernel_size=5, padding=2)
         self.hidden_size = hidden_size
     
     def forward(self, h, x):
         h = self.convgru1(h, x)
-        h = self.convgru2(h, x)
+        # h = self.convgru2(h, x)
         return h
 
 class ConvGRU(nn.Module):
@@ -117,7 +117,7 @@ class MotionEncoder(nn.Module):
         super(MotionEncoder,self).__init__()
 
         self.convcorr1 = general_conv2d(in_channels=in_channels_corr, out_channels=corr_layers[0], ksize=1, do_batch_norm=False)
-        self.convcorr2 = general_conv2d(in_channels=corr_layers[0], out_channels=corr_layers[1], do_batch_norm=False)
+        # self.convcorr2 = general_conv2d(in_channels=corr_layers[0], out_channels=corr_layers[1], do_batch_norm=False)
 
         self.convflow1 = general_conv2d(in_channels=2, out_channels=flow_layers[0], do_batch_norm=False, ksize=7)
         self.convflow2 = general_conv2d(in_channels=flow_layers[0], out_channels=flow_layers[1], do_batch_norm=False)
@@ -129,7 +129,7 @@ class MotionEncoder(nn.Module):
 
     def forward(self, flow, corr_features):
         corr = self.convcorr1(corr_features)
-        corr = self.convcorr2(corr)
+        # corr = self.convcorr2(corr)
 
         flow_original = flow
         flow = self.convflow1(flow)
@@ -220,16 +220,22 @@ class FeatureEncoder(nn.Module):
 
         self.conv1 = general_conv2d(in_channels=in_channels, out_channels=res_layers[0], ksize=7, strides=2, do_batch_norm=do_batch_norm)
         self.layer1 = nn.Sequential(
-            build_resnet_block(in_channels=res_layers[0], out_channels=res_layers[1], do_batch_norm=do_batch_norm),
-            build_resnet_block(in_channels=res_layers[1], out_channels=res_layers[1], do_batch_norm=do_batch_norm)
+            build_bottleneck_block(in_channels=res_layers[0], out_channels=res_layers[1], do_batch_norm=do_batch_norm),
+            build_bottleneck_block(in_channels=res_layers[1], out_channels=res_layers[1], do_batch_norm=do_batch_norm)
+            # build_resnet_block(in_channels=res_layers[0], out_channels=res_layers[1], do_batch_norm=do_batch_norm),
+            # build_resnet_block(in_channels=res_layers[1], out_channels=res_layers[1], do_batch_norm=do_batch_norm)
         )
         self.layer2 = nn.Sequential(
-            build_resnet_block(in_channels=res_layers[1], out_channels=res_layers[2], do_batch_norm=do_batch_norm),
-            build_resnet_block(in_channels=res_layers[2], out_channels=res_layers[2], do_batch_norm=do_batch_norm)
+            build_bottleneck_block(in_channels=res_layers[1], out_channels=res_layers[2], do_batch_norm=do_batch_norm),
+            build_bottleneck_block(in_channels=res_layers[2], out_channels=res_layers[2], do_batch_norm=do_batch_norm)
+            # build_resnet_block(in_channels=res_layers[1], out_channels=res_layers[2], do_batch_norm=do_batch_norm),
+            # build_resnet_block(in_channels=res_layers[2], out_channels=res_layers[2], do_batch_norm=do_batch_norm)
         )
         self.layer3 = nn.Sequential(
-            build_resnet_block(in_channels=res_layers[2], out_channels=res_layers[3], do_batch_norm=do_batch_norm),
-            build_resnet_block(in_channels=res_layers[3], out_channels=res_layers[3], do_batch_norm=do_batch_norm)
+            build_bottleneck_block(in_channels=res_layers[2], out_channels=res_layers[3], do_batch_norm=do_batch_norm),
+            build_bottleneck_block(in_channels=res_layers[3], out_channels=res_layers[3], do_batch_norm=do_batch_norm)
+            # build_resnet_block(in_channels=res_layers[2], out_channels=res_layers[3], do_batch_norm=do_batch_norm),
+            # build_resnet_block(in_channels=res_layers[3], out_channels=res_layers[3], do_batch_norm=do_batch_norm)
         )
         self.conv2 = general_conv2d(in_channels=res_layers[3], out_channels=out_channels, ksize=1)
 
