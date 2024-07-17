@@ -5,20 +5,40 @@ class build_resnet_block(nn.Module):
     """
     a resnet block which includes two general_conv2d
     """
-    def __init__(self, channels, layers=2, do_batch_norm=False):
+    def __init__(self, in_channels, out_channels, do_batch_norm=False):
         super(build_resnet_block,self).__init__()
-        self._channels = channels
-        self._layers = layers
+        self.in_channels = in_channels
+        self.out_channels = out_channels
 
-        self.res_block = nn.Sequential(*[general_conv2d(in_channels=self._channels,
-                                             out_channels=self._channels,
-                                             strides=1,
-                                             do_batch_norm=do_batch_norm) for i in range(self._layers)])
+        self.res_block = nn.Sequential(
+            general_conv2d(in_channels=self.in_channels, out_channels=self.out_channels, do_batch_norm=do_batch_norm),
+            general_conv2d(in_channels=self.out_channels, out_channels=self.out_channels, do_batch_norm=do_batch_norm),
+        )
 
-    def forward(self,input_res):
+    def forward(self, input_res):
         inputs = input_res.clone()
         input_res = self.res_block(input_res)
         return input_res + inputs
+    
+class build_bottleneck_block(nn.Module):
+    """
+    a bottleneck block which includes three general_conv2d
+    """
+    def __init__(self, channels, layers=2, do_batch_norm=False):
+        super(build_bottleneck_block,self).__init__()
+        self._channels = channels
+        self._layers = layers
+
+        self.bn_block = nn.Sequential(
+            general_conv2d(in_channels = self._channels, out_channels=self._channels // 4, do_batch_norm=do_batch_norm),
+            general_conv2d(in_channels = self._channels // 4 , out_channels=self._channels //4, ksize=1, do_batch_norm=do_batch_norm),
+            general_conv2d(in_channels = self._channels // 4, out_channels=self._channels, do_batch_norm=do_batch_norm),
+        )
+
+    def forward(self,input_bn):
+        inputs = input_bn.clone()
+        input_bn = self.bn_block(input_bn)
+        return input_bn + inputs
 
 class upsample_conv2d_and_predict_flow(nn.Module):
     """

@@ -138,6 +138,7 @@ def main(args: DictConfig):
         print("on epoch: {}".format(epoch+1))
         for i, batch in enumerate(tqdm(train_data)):
             batch: Dict[str, Any]
+            event_image_prev = batch["event_volume_prev"].to(device) # [B, 4, 480, 640]
             event_image = batch["event_volume"].to(device) # [B, 4, 480, 640]
             ground_truth_flow = batch["flow_gt"].to(device) # [B, 2, 480, 640]
             flow_dict = model(event_image) # [B, 2, 480, 640]

@@ -316,20 +316,10 @@ class Sequence(Dataset):
         assert y.max() < self.height
         return rectify_map[y, x]
     
-    def get_data(self, index) -> Dict[str, any]:
+    def get_event_data(self, index):
         ts_start: int = self.timestamps_flow[index] - self.delta_t_us
         ts_end: int = self.timestamps_flow[index]
-
-        file_index = self.indices[index]
-
-        output = {
-            'file_index': file_index,
-            'timestamp': self.timestamps_flow[index],
-            'seq_name': self.seq_name
-        }
-        # Save sample for benchmark submission
-        output['save_submission'] = file_index in self.idx_to_visualize
-        output['visualize'] = self.visualize_samples
+        
         event_data = self.event_slicer.get_events(
             ts_start, ts_end)
         p = event_data['p']
@@ -341,22 +331,38 @@ class Sequence(Dataset):
         x_rect = xy_rect[:, 0]
         y_rect = xy_rect[:, 1]
 
+        return p, t, x_rect, y_rect
+
+    def get_data(self, index) -> Dict[str, any]:
+        file_index = self.indices[index]
+
+        output = {
+            'file_index': file_index,
+            'timestamp': self.timestamps_flow[index],
+            'seq_name': self.seq_name
+        }
+        # Save sample for benchmark submission
+        output['save_submission'] = file_index in self.idx_to_visualize
+        output['visualize'] = self.visualize_samples
+
+        p_prev, t_prev, x_rect_prev, y_rect_prev = self.get_event_data(index-1) if index != 0 else self.get_event_data(index)
+
+        p, t, x_rect, y_rect = self.get_event_data(index)
+
         if self.voxel_grid is None:
             raise NotImplementedError
         else:
-            event_representation = self.events_to_voxel_grid(
-                p, t, x_rect, y_rect)
+            event_representation_prev = self.events_to_voxel_grid(p_prev, t_prev, x_rect_prev, y_rect_prev)
+            event_representation = self.events_to_voxel_grid(p, t, x_rect, y_rect)
+            output['event_volume_prev'] = event_representation_prev
             output['event_volume'] = event_representation
         output['name_map'] = self.name_idx
         
         if self.load_gt:
-            output['flow_gt'
-                ] = [torch.tensor(x) for x in self.load_flow(self.flow_png[index])]
+            output['flow_gt'] = [torch.tensor(x) for x in self.load_flow(self.flow_png[index])]
 
-            output['flow_gt'
-                ][0] = torch.moveaxis(output['flow_gt'][0], -1, 0)
-            output['flow_gt'
-                ][1] = torch.unsqueeze(output['flow_gt'][1], 0)
+            output['flow_gt'][0] = torch.moveaxis(output['flow_gt'][0], -1, 0)
+            output['flow_gt'][1] = torch.unsqueeze(output['flow_gt'][1], 0)
         return output
 
     def __getitem__(self, idx):

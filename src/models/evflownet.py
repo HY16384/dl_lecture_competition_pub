@@ -15,7 +15,7 @@ class EVFlowNet(nn.Module):
         self.encoder3 = general_conv2d(in_channels = 2*_BASE_CHANNELS, out_channels=4*_BASE_CHANNELS, do_batch_norm=not self._args.no_batch_norm)
         self.encoder4 = general_conv2d(in_channels = 4*_BASE_CHANNELS, out_channels=8*_BASE_CHANNELS, do_batch_norm=not self._args.no_batch_norm)
 
-        self.resnet_block = nn.Sequential(*[build_resnet_block(8*_BASE_CHANNELS, do_batch_norm=not self._args.no_batch_norm) for i in range(2)])
+        self.resnet_block = nn.Sequential(*[build_resnet_block(8*_BASE_CHANNELS, 8*_BASE_CHANNELS, do_batch_norm=not self._args.no_batch_norm) for i in range(2)])
 
         self.decoder1 = upsample_conv2d_and_predict_flow(in_channels=16*_BASE_CHANNELS,
                         out_channels=4*_BASE_CHANNELS, do_batch_norm=not self._args.no_batch_norm)
