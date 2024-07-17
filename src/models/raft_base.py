@@ -210,7 +210,7 @@ class CorrBlock(nn.Module):
 class FeatureEncoder(nn.Module):
     """
     特徴を抽出する feature encoderにもcontext encoderにも使われる
-    サイズが-8になる(らしい)点に注意
+    サイズが-8になる(らしい?)点に注意
     """
 
     def __init__(self, in_channels, res_layers=(64, 64, 96, 128), out_channels=256, do_batch_norm=True):
@@ -220,22 +220,22 @@ class FeatureEncoder(nn.Module):
 
         self.conv1 = general_conv2d(in_channels=in_channels, out_channels=res_layers[0], ksize=7, strides=2, padding=0, do_batch_norm=do_batch_norm)
         self.layer1 = nn.Sequential(
-            build_bottleneck_block(in_channels=res_layers[0], out_channels=res_layers[1], do_batch_norm=do_batch_norm),
-            build_bottleneck_block(in_channels=res_layers[1], out_channels=res_layers[1], do_batch_norm=do_batch_norm)
-            # build_resnet_block(in_channels=res_layers[0], out_channels=res_layers[1], do_batch_norm=do_batch_norm),
-            # build_resnet_block(in_channels=res_layers[1], out_channels=res_layers[1], do_batch_norm=do_batch_norm)
+            # build_bottleneck_block(in_channels=res_layers[0], out_channels=res_layers[1], do_batch_norm=do_batch_norm),
+            # build_bottleneck_block(in_channels=res_layers[1], out_channels=res_layers[1], do_batch_norm=do_batch_norm)
+            build_resnet_block(in_channels=res_layers[0], out_channels=res_layers[1], do_batch_norm=do_batch_norm),
+            build_resnet_block(in_channels=res_layers[1], out_channels=res_layers[1], do_batch_norm=do_batch_norm)
         )
         self.layer2 = nn.Sequential(
-            build_bottleneck_block(in_channels=res_layers[1], out_channels=res_layers[2], do_batch_norm=do_batch_norm),
-            build_bottleneck_block(in_channels=res_layers[2], out_channels=res_layers[2], do_batch_norm=do_batch_norm)
-            # build_resnet_block(in_channels=res_layers[1], out_channels=res_layers[2], do_batch_norm=do_batch_norm),
-            # build_resnet_block(in_channels=res_layers[2], out_channels=res_layers[2], do_batch_norm=do_batch_norm)
+            # build_bottleneck_block(in_channels=res_layers[1], out_channels=res_layers[2], do_batch_norm=do_batch_norm),
+            # build_bottleneck_block(in_channels=res_layers[2], out_channels=res_layers[2], do_batch_norm=do_batch_norm)
+            build_resnet_block(in_channels=res_layers[1], out_channels=res_layers[2], do_batch_norm=do_batch_norm),
+            build_resnet_block(in_channels=res_layers[2], out_channels=res_layers[2], do_batch_norm=do_batch_norm)
         )
         self.layer3 = nn.Sequential(
-            build_bottleneck_block(in_channels=res_layers[2], out_channels=res_layers[3], do_batch_norm=do_batch_norm),
-            build_bottleneck_block(in_channels=res_layers[3], out_channels=res_layers[3], do_batch_norm=do_batch_norm)
-            # build_resnet_block(in_channels=res_layers[2], out_channels=res_layers[3], do_batch_norm=do_batch_norm),
-            # build_resnet_block(in_channels=res_layers[3], out_channels=res_layers[3], do_batch_norm=do_batch_norm)
+            # build_bottleneck_block(in_channels=res_layers[2], out_channels=res_layers[3], do_batch_norm=do_batch_norm),
+            # build_bottleneck_block(in_channels=res_layers[3], out_channels=res_layers[3], do_batch_norm=do_batch_norm)
+            build_resnet_block(in_channels=res_layers[2], out_channels=res_layers[3], do_batch_norm=do_batch_norm),
+            build_resnet_block(in_channels=res_layers[3], out_channels=res_layers[3], do_batch_norm=do_batch_norm)
         )
         self.conv2 = general_conv2d(in_channels=res_layers[3], out_channels=out_channels, ksize=1, strides=1, padding=0,)
 

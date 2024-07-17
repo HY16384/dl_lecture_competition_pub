@@ -20,7 +20,7 @@ class RAFT(nn.Module):
         self.corr_block = corr_block
         self.update_block = update_block
 
-        self.mask_predictor = mask_predictor
+        # self.mask_predictor = mask_predictor
 
     def forward(self, inputs_now: Dict[str, Any], inputs_prev: Dict[str, Any], num_flow_updates: int = 12) -> Dict[str, Any]:
         batch_size, _, h, w = inputs_prev.shape
