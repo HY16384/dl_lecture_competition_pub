@@ -5,7 +5,7 @@ from omegaconf import DictConfig
 from torch.utils.data import DataLoader
 import random
 import numpy as np
-from src.models.raft import get_raft_model
+from torchvision.models.optical_flow import raft_small
 from src.datasets import DatasetProvider
 from enum import Enum, auto
 from src.datasets import train_collate
@@ -124,7 +124,7 @@ def main(args: DictConfig):
     # ------------------
     #       Model
     # ------------------
-    model = get_raft_model().to(device)
+    model = raft_small()
 
     # ------------------
     #   optimizer
@@ -171,8 +171,8 @@ def main(args: DictConfig):
         print("start test")
         for batch in tqdm(test_data):
             batch: Dict[str, Any]
-            event_image_prev = batch["event_volume_prev"].to(device)
             event_image = batch["event_volume"].to(device)
+            event_image_prev = batch["event_volume_prev"].to(device)
             batch_flow = model(event_image, event_image_prev) # [1, 2, 480, 640]
             flow = torch.cat((flow, batch_flow), dim=0)  # [N, 2, 480, 640]
         print("test done")
