@@ -30,20 +30,27 @@ class build_bottleneck_block(nn.Module):
     """
     a bottleneck block which includes three general_conv2d
     """
-    def __init__(self, channels, layers=2, do_batch_norm=False):
+    def __init__(self, in_channels, out_channels, layers=2, do_batch_norm=False):
         super(build_bottleneck_block,self).__init__()
-        self._channels = channels
+        self.in_channels = in_channels
+        self.out_channels = out_channels
         self._layers = layers
 
         self.bn_block = nn.Sequential(
-            general_conv2d(in_channels = self._channels, out_channels=self._channels // 4, ksize=1, do_batch_norm=do_batch_norm),
-            general_conv2d(in_channels = self._channels // 4 , out_channels=self._channels //4, strides=1, do_batch_norm=do_batch_norm),
-            general_conv2d(in_channels = self._channels // 4, out_channels=self._channels, ksize=1, do_batch_norm=do_batch_norm),
+            general_conv2d(in_channels = self.in_channels, out_channels=self.out_channels // 4, ksize=1, do_batch_norm=do_batch_norm),
+            general_conv2d(in_channels = self.out_channels // 4 , out_channels=self.out_channels //4, strides=1, do_batch_norm=do_batch_norm),
+            general_conv2d(in_channels = self.out_channels // 4, out_channels=self.out_channels, ksize=1, do_batch_norm=do_batch_norm),
         )
+
+        if self.in_channels != self.out_channels:
+            self.conv = nn.Conv2d(in_channels = self.in_channels,out_channels = self.out_channels, kernel_size = 1)
+        else:
+            self.conv = nn.Identity()
 
     def forward(self,input_bn):
         inputs = input_bn.clone()
         input_bn = self.bn_block(input_bn)
+        inputs = self.conv(inputs)
         return input_bn + inputs
 
 class upsample_conv2d_and_predict_flow(nn.Module):
