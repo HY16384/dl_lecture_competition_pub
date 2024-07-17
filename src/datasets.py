@@ -540,7 +540,7 @@ class SequenceRecurrent(Sequence):
 
 
 class DatasetProvider:
-    def __init__(self, dataset_path: Path, representation_type: RepresentationType, transform, delta_t_ms: int = 100, num_bins=4,
+    def __init__(self, dataset_path: Path, representation_type: RepresentationType, delta_t_ms: int = 100, num_bins=4,
                 config=None, visualize=False):
         test_path = Path(os.path.join(dataset_path, 'test'))
         train_path = Path(os.path.join(dataset_path, 'train'))

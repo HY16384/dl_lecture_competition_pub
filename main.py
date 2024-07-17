@@ -1,4 +1,5 @@
 import torch
+import torch.nn.functional as F
 import hydra
 from omegaconf import DictConfig
 from torch.utils.data import DataLoader
@@ -37,7 +38,8 @@ def compute_epe_error(pred_flows: torch.Tensor, gt_flow: torch.Tensor):
     '''
     loss = 0.0
     for i, key in enumerate(pred_flows):
-        loss += torch.mean(torch.mean(torch.norm(pred_flows[key] - gt_flow, p=2, dim=1), dim=(1, 2)), dim=0) / (2**(2-i)) #変更
+        resized_tensor = F.interpolate(gt_flow, size=(pred_flows[key].shape[2], pred_flows[key].shape[3]), mode='bilinear', align_corners=False)
+        loss += torch.mean(torch.mean(torch.norm(pred_flows[key] - resized_tensor, p=2, dim=1), dim=(1, 2)), dim=0) / (2**(2-i)) #変更
     return loss
 
 def save_optical_flow_to_npy(flow: torch.Tensor, file_name: str):
@@ -89,7 +91,6 @@ def main(args: DictConfig):
     loader = DatasetProvider(
         dataset_path=Path(args.dataset_path),
         representation_type=RepresentationType.VOXEL,
-        transform=transform, #変更
         delta_t_ms=100,
         num_bins=4
     )

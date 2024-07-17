@@ -11,8 +11,8 @@ class build_resnet_block(nn.Module):
         self.out_channels = out_channels
 
         self.res_block = nn.Sequential(
-            general_conv2d(in_channels=self.in_channels, out_channels=self.out_channels, do_batch_norm=do_batch_norm),
-            general_conv2d(in_channels=self.out_channels, out_channels=self.out_channels, do_batch_norm=do_batch_norm),
+            general_conv2d(in_channels=self.in_channels, out_channels=self.out_channels, strides=1, do_batch_norm=do_batch_norm),
+            general_conv2d(in_channels=self.out_channels, out_channels=self.out_channels, strides=1, do_batch_norm=do_batch_norm),
         )
 
     def forward(self, input_res):
@@ -30,9 +30,9 @@ class build_bottleneck_block(nn.Module):
         self._layers = layers
 
         self.bn_block = nn.Sequential(
-            general_conv2d(in_channels = self._channels, out_channels=self._channels // 4, do_batch_norm=do_batch_norm),
-            general_conv2d(in_channels = self._channels // 4 , out_channels=self._channels //4, ksize=1, do_batch_norm=do_batch_norm),
-            general_conv2d(in_channels = self._channels // 4, out_channels=self._channels, do_batch_norm=do_batch_norm),
+            general_conv2d(in_channels = self._channels, out_channels=self._channels // 4, ksize=1, do_batch_norm=do_batch_norm),
+            general_conv2d(in_channels = self._channels // 4 , out_channels=self._channels //4, strides=1, do_batch_norm=do_batch_norm),
+            general_conv2d(in_channels = self._channels // 4, out_channels=self._channels, ksize=1, do_batch_norm=do_batch_norm),
         )
 
     def forward(self,input_bn):
