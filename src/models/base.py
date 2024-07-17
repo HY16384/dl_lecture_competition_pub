@@ -37,10 +37,12 @@ class build_bottleneck_block(nn.Module):
         self._layers = layers
 
         self.bn_block = nn.Sequential(
-            general_conv2d(in_channels = self.in_channels, out_channels=self.out_channels // 4, ksize=1, strides=1, do_batch_norm=do_batch_norm),
-            general_conv2d(in_channels = self.out_channels // 4 , out_channels=self.out_channels // 4, strides=1, do_batch_norm=do_batch_norm),
-            general_conv2d(in_channels = self.out_channels // 4, out_channels=self.out_channels, ksize=1, strides=1, do_batch_norm=do_batch_norm),
+            general_conv2d(in_channels = self.in_channels, out_channels=self.out_channels // 4, ksize=1, strides=1, padding=0, do_batch_norm=do_batch_norm),
+            general_conv2d(in_channels = self.out_channels // 4 , out_channels=self.out_channels // 4, strides=1, padding=1, do_batch_norm=do_batch_norm),
+            general_conv2d(in_channels = self.out_channels // 4, out_channels=self.out_channels, ksize=1, strides=1, padding=0, do_batch_norm=do_batch_norm),
         )
+
+        self.relu = nn.ReLU(inplace=True)
 
         if self.in_channels != self.out_channels:
             self.conv = nn.Conv2d(in_channels = self.in_channels, out_channels = self.out_channels, kernel_size = 1)
@@ -51,7 +53,7 @@ class build_bottleneck_block(nn.Module):
         inputs = input_bn.clone()
         input_bn = self.bn_block(input_bn)
         inputs = self.conv(inputs)
-        return input_bn + inputs
+        return self.relu(input_bn + inputs)
 
 class upsample_conv2d_and_predict_flow(nn.Module):
     """
