@@ -571,7 +571,7 @@ class DatasetProvider:
         for seq in seqs:
             extra_arg = dict()
             train_sequences.append(Sequence(Path(train_path) / seq,
-                                   representation_type=representation_type, mode="train", transform=transform, #変更 transformを追加
+                                   representation_type=representation_type, mode="train",
                                    load_gt=True, **extra_arg))
             self.train_dataset: torch.utils.data.ConcatDataset[Sequence] = torch.utils.data.ConcatDataset(train_sequences)
 
