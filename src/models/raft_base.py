@@ -3,7 +3,7 @@ from torch import nn, Tensor
 import torch.nn.functional as F
 from src.models.base import *
 from typing import List
-from torch._utils import grid_sample
+from src.utils import *
 
 '''
 参考: https://pytorch.org/vision/0.12/_modules/torchvision/models/optical_flow/raft.html
