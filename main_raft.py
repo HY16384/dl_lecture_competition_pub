@@ -5,7 +5,7 @@ from omegaconf import DictConfig
 from torch.utils.data import DataLoader
 import random
 import numpy as np
-from src.models.raft import raft_large
+from src.models.raft import get_raft_model
 from src.datasets import DatasetProvider
 from enum import Enum, auto
 from src.datasets import train_collate
@@ -124,7 +124,7 @@ def main(args: DictConfig):
     # ------------------
     #       Model
     # ------------------
-    model = raft_large().to(device)
+    model = get_raft_model().to(device)
 
     # ------------------
     #   optimizer
