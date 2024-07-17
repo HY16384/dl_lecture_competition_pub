@@ -507,6 +507,13 @@ class SequenceRecurrent(Sequence):
         else:
             sequence[0]['new_sequence'] = 0
 
+        #変更
+        if self.transform:
+            for i in range(len(sequence)):
+                for key in sequence[i]:
+                    if isinstance(sequence[i][key], torch.Tensor):
+                        sequence[i][key] = self.transform(sequence[i][key])
+
         # random crop
         if self.crop_size is not None:
             i, j, h, w = RandomCrop.get_params(
@@ -527,7 +534,7 @@ class SequenceRecurrent(Sequence):
 
 
 class DatasetProvider:
-    def __init__(self, dataset_path: Path, representation_type: RepresentationType, delta_t_ms: int = 100, num_bins=4,
+    def __init__(self, dataset_path: Path, representation_type: RepresentationType, transform, delta_t_ms: int = 100, num_bins=4,
                 config=None, visualize=False):
         test_path = Path(os.path.join(dataset_path, 'test'))
         train_path = Path(os.path.join(dataset_path, 'train'))
@@ -558,7 +565,7 @@ class DatasetProvider:
         for seq in seqs:
             extra_arg = dict()
             train_sequences.append(Sequence(Path(train_path) / seq,
-                                   representation_type=representation_type, mode="train",
+                                   representation_type=representation_type, mode="train", transform=transform, #変更
                                    load_gt=True, **extra_arg))
             self.train_dataset: torch.utils.data.ConcatDataset[Sequence] = torch.utils.data.ConcatDataset(train_sequences)
 

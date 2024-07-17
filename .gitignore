@@ -1,0 +1,4 @@
+data/train/
+data/test/
+.DS_Store
+venv/

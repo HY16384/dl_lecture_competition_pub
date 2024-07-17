@@ -14,6 +14,8 @@ from typing import Dict, Any
 import os
 import time
 
+import torchvision.transforms as transforms
+
 
 class RepresentationType(Enum):
     VOXEL = auto()
@@ -74,9 +76,18 @@ def main(args: DictConfig):
     # ------------------
     #    Dataloader
     # ------------------
+
+    transform = transforms.Compose([
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomVerticalFlip(),
+        transforms.RandomRotation(10),
+        transforms.ToTensor(),
+    ])
+
     loader = DatasetProvider(
         dataset_path=Path(args.dataset_path),
         representation_type=RepresentationType.VOXEL,
+        transform=transform, #変更
         delta_t_ms=100,
         num_bins=4
     )

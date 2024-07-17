@@ -1,0 +1,48 @@
+{
+    "os": "macOS-14.5-arm64-arm-64bit",
+    "python": "3.9.6",
+    "heartbeatAt": "2024-07-13T03:49:25.782255",
+    "startedAt": "2024-07-13T03:49:13.727669",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "use_wandb=True"
+    ],
+    "state": "running",
+    "program": "/Users/yamadaharuki/Github/dl_lecture_competition_pub/main.py",
+    "codePath": "main.py",
+    "git": {
+        "remote": "https://github.com/HY16384/dl_lecture_competition_pub.git",
+        "commit": "6a3565bfc9792273d247c621622c2113f965020b"
+    },
+    "email": "s7353109@g.ecc.u-tokyo.ac.jp",
+    "root": "/Users/yamadaharuki/Github/dl_lecture_competition_pub",
+    "host": "yamadasatoshitakas-MacBook-Pro.local",
+    "username": "yamadaharuki",
+    "executable": "/Users/yamadaharuki/Github/dl_lecture_competition_pub/venv/bin/python3",
+    "cpu_count": 11,
+    "cpu_count_logical": 11,
+    "cpu_freq": {
+        "current": 4056,
+        "min": 696,
+        "max": 4056
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 4056,
+            "min": 696,
+            "max": 4056
+        }
+    ],
+    "disk": {
+        "total": 460.4317207336426,
+        "used": 9.559738159179688
+    },
+    "gpuapple": {
+        "type": "arm",
+        "vendor": "Apple"
+    },
+    "memory": {
+        "total": 18.0
+    }
+}

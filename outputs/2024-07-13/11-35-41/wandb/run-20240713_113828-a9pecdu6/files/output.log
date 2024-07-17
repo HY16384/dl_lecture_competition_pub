@@ -1,0 +1,14 @@
+Error executing job with overrides: ['use_wandb=True']
+Traceback (most recent call last):
+  File "/Users/yamadaharuki/Github/dl_lecture_competition_pub/main.py", line 30, in run
+    train_set = ThingsMEGDataset("train", args.data_dir)
+  File "/Users/yamadaharuki/Github/dl_lecture_competition_pub/src/datasets.py", line 16, in __init__
+    self.X = torch.load(os.path.join(data_dir, f"{split}_X.pt"))
+  File "/Users/yamadaharuki/Github/dl_lecture_competition_pub/venv/lib/python3.9/site-packages/torch/serialization.py", line 791, in load
+    with _open_file_like(f, 'rb') as opened_file:
+  File "/Users/yamadaharuki/Github/dl_lecture_competition_pub/venv/lib/python3.9/site-packages/torch/serialization.py", line 271, in _open_file_like
+    return _open_file(name_or_buffer, mode)
+  File "/Users/yamadaharuki/Github/dl_lecture_competition_pub/venv/lib/python3.9/site-packages/torch/serialization.py", line 252, in __init__
+    super().__init__(open(name, mode))
+FileNotFoundError: [Errno 2] No such file or directory: 'data/train_X.pt'
+Set the environment variable HYDRA_FULL_ERROR=1 for a complete stack trace.
